@@ -1,0 +1,14 @@
+{
+  "api_id": null,
+  "api_hash": null,
+
+  "session_file": "~/.telemcp/session",
+
+  "whitelist": {
+    "folders":  [],
+    "groups":   [],
+    "accounts": []
+  },
+
+  "proxy": null
+}
