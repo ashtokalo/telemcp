@@ -44,8 +44,8 @@ class Config:
     @classmethod
     def load(cls, path: str) -> "Config":
         if not os.path.isabs(path):
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            candidate = os.path.join(script_dir, path)
+            # Try current working directory first, then ~/.telemcp/
+            candidate = os.path.join(os.getcwd(), path)
             if not os.path.exists(candidate):
                 candidate = os.path.join(os.path.expanduser("~/.telemcp"), path)
             path = candidate

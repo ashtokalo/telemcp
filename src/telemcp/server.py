@@ -3,10 +3,10 @@
 telemcp — Read-only Telegram MCP server.
 
 Usage:
-    python server.py [--config config.json]
+    python -m telemcp.server [--config config.json]
 
 First run:
-    python auth.py [--config config.json]
+    python -m telemcp.auth [--config config.json]
 """
 import argparse
 import asyncio
@@ -16,10 +16,10 @@ from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
 
-from config import Config
-from tg import TelegramReader
-from tools import register_tools
-from whitelist import Whitelist
+from .config import Config
+from .tg import TelegramReader
+from .tools import register_tools
+from .whitelist import Whitelist
 
 
 async def main() -> None:
@@ -70,5 +70,9 @@ async def main() -> None:
         await tg.disconnect()
 
 
-if __name__ == "__main__":
+def run() -> None:
     asyncio.run(main())
+
+
+if __name__ == "__main__":
+    run()

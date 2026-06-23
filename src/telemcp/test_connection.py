@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Quick connectivity smoke test. Run from the telemcp directory."""
+"""Quick connectivity smoke test."""
 import asyncio
 import argparse
 import sys
 
-from config import Config
-from tg import TelegramReader
-from whitelist import Whitelist
+from .config import Config
+from .tg import TelegramReader
+from .whitelist import Whitelist
 
 
 async def run(config_path: str) -> None:

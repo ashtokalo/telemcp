@@ -6,8 +6,8 @@ Run once to create the session file.  After that, server.py starts without
 any interactive input.
 
 Usage:
-    python auth.py [--config config.json]           # phone + code
-    python auth.py [--config config.json] --qr      # QR code (scan with existing Telegram app)
+    python -m telemcp.auth [--config config.json]           # phone + code
+    python -m telemcp.auth [--config config.json] --qr      # QR code (scan with existing Telegram app)
 """
 import argparse
 import asyncio
@@ -21,7 +21,7 @@ from telethon.errors import SessionPasswordNeededError
 
 async def _finish(client, config) -> None:
     """Export session (encrypting if pin is set), print who we logged in as, disconnect."""
-    import session as _session
+    from . import session as _session
 
     me = await client.get_me()
     name = f"{me.first_name or ''} {me.last_name or ''}".strip()
@@ -81,7 +81,7 @@ async def auth_qr(client) -> None:
     try:
         await qr_login.wait(timeout=60)
     except asyncio.TimeoutError:
-        print("QR code expired. Run auth.py again.", file=sys.stderr)
+        print("QR code expired. Run auth again.", file=sys.stderr)
         sys.exit(1)
     except SessionPasswordNeededError:
         password = input("Two-factor authentication password: ").strip()
@@ -89,8 +89,8 @@ async def auth_qr(client) -> None:
 
 
 async def authenticate(config, use_qr: bool) -> None:
-    import session as _session
-    from tg import build_proxy
+    from . import session as _session
+    from .tg import build_proxy
 
     session_dir = os.path.dirname(config.session_file)
     if session_dir:
@@ -159,7 +159,7 @@ def main() -> None:
             stream=sys.stderr,
         )
 
-    from config import Config
+    from .config import Config
     config = Config.load(args.config)
 
     asyncio.run(authenticate(config, use_qr=args.qr))

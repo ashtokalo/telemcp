@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "telemcp"
+version = "0.1.0"
+description = "Read-only Telegram MCP server for AI assistants"
+authors = [{name = "Alexey Shtokalo"}]
+keywords = ["ai", "telegram", "mcp"]
+requires-python = ">=3.8"
+dependencies = [
+    "telethon>=1.36.0",
+    "mcp>=1.0.0",
+    "pysocks>=1.7.1",
+    "python-socks>=2.0.0",
+    "qrcode>=7.0",
+    "cryptography>=41.0",
+]
+
+[project.scripts]
+telemcp = "telemcp.server:run"
+telemcp-auth = "telemcp.auth:main"
+telemcp-test = "telemcp.test_connection:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

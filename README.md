@@ -17,17 +17,19 @@ Typical use cases:
 
 ## Installation
 
-On most modern Linux distributions and macOS, system Python is managed externally and
-`pip install` into the system environment is blocked. Use a virtual environment:
+```bash
+make configure
+```
+
+This creates `.venv` and installs all dependencies including dev tools. Equivalent to:
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+.venv/bin/pip install -e ".[dev]"
 ```
 
-Run all subsequent commands (`auth.py`, `server.py`, `test_connection.py`) inside the
-activated environment, or prefix them with `.venv/bin/python`.
+On most modern Linux distributions and macOS, system Python is managed externally and
+`pip install` into the system environment is blocked — always use a virtual environment.
 
 ## API credentials
 
@@ -57,7 +59,7 @@ Two login methods are available:
 **Phone + code** - Telegram sends a confirmation code to your other devices:
 
 ```bash
-python auth.py --config config.json
+make auth-phone
 ```
 
 Enter your phone number with country code (e.g. `+79001234567`) and the code that arrives
@@ -66,25 +68,25 @@ in Telegram. If two-factor authentication is enabled, it also asks for the passw
 **QR code** - no SMS or code needed; scan with an existing Telegram client:
 
 ```bash
-python auth.py --config config.json --qr
+make auth-qr
 ```
 
 A QR code is printed to the terminal. On your phone or desktop Telegram, go to
 Settings -> Devices -> Link Desktop Device, then scan the code. If two-factor authentication
 is enabled, it prompts for the password after scanning.
 
-Use `--qr` if codes sent to your devices are not arriving, or to avoid phone-based verification.
+Use `make auth-qr` if codes sent to your devices are not arriving, or to avoid phone-based verification.
 
 To see full Telethon protocol logs during auth (useful for debugging):
 
 ```bash
-python auth.py --config config.json --verbose
+.venv/bin/python -m telemcp.auth --config config.json --verbose
 ```
 
 **3. Verify the connection.** After authentication, run the smoke test to confirm everything works:
 
 ```bash
-python test_connection.py --config config.json
+make connection
 ```
 
 It connects to Telegram, prints all folders and the first 15 dialogs, and if a whitelist is
@@ -243,7 +245,7 @@ set the `TELEMCP_PINCODE` environment variable before running `auth.py` and the 
 
 ```bash
 export TELEMCP_PINCODE="your-passphrase"
-python auth.py --config config.json
+make auth-phone   # or make auth-qr
 ```
 
 When the variable is set:
@@ -282,6 +284,22 @@ Via CLI (`claude mcp add` does not support `env` directly — edit `.mcp.json` a
 ```bash
 claude mcp add telegram /path/to/telemcp/telemcp.sh --config /path/to/telemcp/config.json
 # then open .mcp.json and add the "env" block manually
+```
+
+## Running tests
+
+```bash
+make test
+```
+
+Tests cover config loading and path resolution, whitelist filtering, session encryption
+round-trips, and URL/chat-ref parsing. They run without a Telegram connection.
+
+To run a specific file or test:
+
+```bash
+.venv/bin/pytest tests/test_session.py -v
+.venv/bin/pytest tests/ -k "wrong_pin" -v
 ```
 
 ## Available tools

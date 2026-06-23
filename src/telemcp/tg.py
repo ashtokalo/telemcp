@@ -199,7 +199,7 @@ class TelegramReader:
 
     async def connect(self):
         import os
-        import session as _session
+        from . import session as _session
 
         session_dir = os.path.dirname(self._config.session_file)
         if session_dir:
@@ -233,13 +233,13 @@ class TelegramReader:
         if not await self._client.is_user_authorized():
             await self._client.disconnect()
             raise RuntimeError(
-                "Not authorized. Run  python auth.py --config <config.json>  first."
+                "Not authorized. Run  python -m telemcp.auth --config <config.json>  first."
             )
 
     async def disconnect(self):
         if self._client:
             if self._enc_session_path:
-                import session as _session
+                from . import session as _session
                 from telethon.sessions import StringSession
                 session_string = StringSession.save(self._client.session)
                 _session.save(session_string, self._enc_session_path, _session.get_pin())
