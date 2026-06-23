@@ -236,6 +236,54 @@ Optional. Supported types:
 
 Set to `null` to connect directly.
 
+## Session encryption
+
+By default, the Telethon session is stored as a plain SQLite file on disk. To encrypt it,
+set the `TELEMCP_PINCODE` environment variable before running `auth.py` and the server.
+
+```bash
+export TELEMCP_PINCODE="your-passphrase"
+python auth.py --config config.json
+```
+
+When the variable is set:
+
+- `auth.py` exports the session as a string, encrypts it with Fernet (AES-128-CBC + HMAC-SHA256,
+  key derived via PBKDF2-HMAC-SHA256 with 200 000 iterations), and saves it to
+  `<session_file>.enc`. The plain SQLite file is deleted.
+- The server loads the encrypted file into memory on startup and saves it back on shutdown.
+  The plain session file is never written to disk.
+
+The `.enc` file is useless without the passphrase.
+
+If `TELEMCP_PINCODE` is not set, the server falls back to the plain SQLite session with no
+change in behavior.
+
+### Passing the pin to Claude Code
+
+In `.mcp.json`, use the `env` field:
+
+```json
+{
+  "mcpServers": {
+    "telegram": {
+      "command": "/path/to/telemcp/telemcp.sh",
+      "args": ["--config", "/path/to/telemcp/config.json"],
+      "env": {
+        "TELEMCP_PINCODE": "your-passphrase"
+      }
+    }
+  }
+}
+```
+
+Via CLI (`claude mcp add` does not support `env` directly — edit `.mcp.json` after adding):
+
+```bash
+claude mcp add telegram /path/to/telemcp/telemcp.sh --config /path/to/telemcp/config.json
+# then open .mcp.json and add the "env" block manually
+```
+
 ## Available tools
 
 ### tg_list_folders

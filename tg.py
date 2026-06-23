@@ -191,6 +191,7 @@ class TelegramReader:
         self._client: Optional[TelegramClient] = None
         self._folder_filters = None   # cached after first load
         self._dialogs_cache = None    # cached for session lifetime
+        self._enc_session_path: Optional[str] = None  # set when encrypted session is used
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -198,6 +199,7 @@ class TelegramReader:
 
     async def connect(self):
         import os
+        import session as _session
 
         session_dir = os.path.dirname(self._config.session_file)
         if session_dir:
@@ -210,8 +212,18 @@ class TelegramReader:
         if conn_cls:
             kwargs["connection"] = conn_cls
 
+        if _session.pin_is_set():
+            from telethon.sessions import StringSession
+            enc = _session.enc_path(self._config.session_file)
+            session_string = _session.load(enc, _session.get_pin())
+            telethon_session = StringSession(session_string)
+            self._enc_session_path = enc
+        else:
+            telethon_session = self._config.session_file
+            self._enc_session_path = None
+
         self._client = TelegramClient(
-            self._config.session_file,
+            telethon_session,
             self._config.api_id,
             self._config.api_hash,
             **kwargs,
@@ -226,6 +238,11 @@ class TelegramReader:
 
     async def disconnect(self):
         if self._client:
+            if self._enc_session_path:
+                import session as _session
+                from telethon.sessions import StringSession
+                session_string = StringSession.save(self._client.session)
+                _session.save(session_string, self._enc_session_path, _session.get_pin())
             await self._client.disconnect()
 
     # ------------------------------------------------------------------

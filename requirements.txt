@@ -3,3 +3,4 @@ mcp>=1.0.0
 pysocks>=1.7.1
 python-socks>=2.0.0
 qrcode>=7.0
+cryptography>=41.0
