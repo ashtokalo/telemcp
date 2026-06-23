@@ -1,5 +1,6 @@
 """Tests for telemcp.session."""
 import os
+import sys
 import pytest
 
 from telemcp import session as _session
@@ -48,6 +49,7 @@ class TestEncryption:
         _session.save(SESSION_STRING, path, PIN)
         assert os.path.exists(path)
 
+    @pytest.mark.skipif(sys.platform == "win32", reason="Unix permissions not supported on Windows")
     def test_save_sets_permissions(self, tmp_path):
         path = str(tmp_path / "session.enc")
         _session.save(SESSION_STRING, path, PIN)

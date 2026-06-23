@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "telemcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "Read-only Telegram MCP server for AI assistants"
 authors = [{name = "Alexey Shtokalo"}]
 keywords = ["ai", "telegram", "mcp"]

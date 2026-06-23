@@ -53,7 +53,8 @@ def save(session_string: str, path: str, pin: str) -> None:
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="ascii") as fp:
         json.dump(payload, fp)
-    os.chmod(tmp, 0o600)
+    if sys.platform != "win32":
+        os.chmod(tmp, 0o600)
     os.replace(tmp, path)
 
 
