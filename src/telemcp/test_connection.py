@@ -55,7 +55,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="config.json")
     args = parser.parse_args()
-    asyncio.run(run(args.config))
+    try:
+        asyncio.run(run(args.config))
+    except KeyboardInterrupt:
+        print("\nCancelled.", file=sys.stderr)
+        sys.exit(0)
 
 
 if __name__ == "__main__":

@@ -162,7 +162,11 @@ def main() -> None:
     from .config import Config
     config = Config.load(args.config)
 
-    asyncio.run(authenticate(config, use_qr=args.qr))
+    try:
+        asyncio.run(authenticate(config, use_qr=args.qr))
+    except KeyboardInterrupt:
+        print("\nCancelled.", file=sys.stderr)
+        sys.exit(0)
 
 
 if __name__ == "__main__":
