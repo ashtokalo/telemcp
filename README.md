@@ -108,18 +108,40 @@ First 15 dialogs (no whitelist filter):
 `tg_list_dialogs` to find the IDs of the folders and chats you want to allow, then add
 them to `config.json`.
 
-**5. Register the server in your MCP client** (e.g. Claude Code `.mcp.json`):
+**5. Register the server in your MCP client.**
+
+Via Claude Code CLI (simplest):
+
+```bash
+claude mcp add telegram /path/to/telemcp/telemcp.sh --config /path/to/config.json
+```
+
+Or manually in `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "telegram": {
-      "command": "python",
-      "args": ["/path/to/telemcp/server.py", "--config", "/path/to/config.json"]
+      "command": "/path/to/telemcp/telemcp.sh",
+      "args": ["--config", "/path/to/telemcp/config.json"]
     }
   }
 }
 ```
+
+`telemcp.sh` uses Python from `.venv` inside the telemcp directory if it exists, otherwise
+falls back to the system `python3`.
+
+## Config file lookup order
+
+When `--config` is a relative path (or omitted, defaulting to `config.json`), the server
+resolves it in this order:
+
+1. Next to the script itself: `<telemcp dir>/config.json`
+2. In the user config directory: `~/.telemcp/config.json`
+
+If neither location has the file, the server exits with an error. Absolute paths bypass
+this lookup and are used as-is.
 
 ## Configuration reference
 
