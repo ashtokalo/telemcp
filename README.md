@@ -17,19 +17,39 @@ Typical use cases:
 
 ## Installation
 
+**Using pipx (recommended for end users):**
+
+pipx installs CLI tools into isolated environments and makes them available globally.
+
 ```bash
-make configure
+pipx install git+https://github.com/ashtokalo/telemcp.git
 ```
 
-This creates `.venv` and installs all dependencies including dev tools. Equivalent to:
+After this, `telemcp`, `telemcp-auth`, and `telemcp-test` are available system-wide.
+To upgrade to the latest version:
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -e ".[dev]"
+pipx upgrade telemcp
+```
+
+**Using pip:**
+
+```bash
+pip install git+https://github.com/ashtokalo/telemcp.git
 ```
 
 On most modern Linux distributions and macOS, system Python is managed externally and
-`pip install` into the system environment is blocked — always use a virtual environment.
+`pip install` into the system environment is blocked. Use a virtual environment or pipx.
+
+**From source (for development):**
+
+```bash
+git clone https://github.com/ashtokalo/telemcp.git
+cd telemcp
+make configure
+```
+
+This creates `.venv` and installs the package in editable mode including dev tools.
 
 ## API credentials
 

@@ -7,13 +7,13 @@ configure:
 	.venv/bin/pip install -e ".[dev]" -q
 
 auth-phone:
-	$(PYTHON) -m telemcp.auth $(ARGS)
+	$(PYTHON) -m telemcp auth $(ARGS)
 
 auth-qr:
-	$(PYTHON) -m telemcp.auth --qr $(ARGS)
+	$(PYTHON) -m telemcp auth --qr $(ARGS)
 
 test:
 	$(PYTHON) -m pytest tests/ -v
 
 connection:
-	$(PYTHON) -m telemcp.test_connection $(ARGS)
+	$(PYTHON) -m telemcp connection $(ARGS)

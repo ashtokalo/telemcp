@@ -12,4 +12,4 @@ if ! "$PYTHON" -c "import telemcp" 2>/dev/null; then
     export PYTHONPATH="$DIR/src${PYTHONPATH:+:$PYTHONPATH}"
 fi
 
-exec "$PYTHON" -m telemcp.server "$@"
+exec "$PYTHON" -m telemcp "$@"

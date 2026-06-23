@@ -16,6 +16,7 @@ from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
 
+from . import __version__
 from .config import Config
 from .tg import TelegramReader
 from .tools import register_tools
@@ -59,7 +60,7 @@ async def main() -> None:
                 write_stream,
                 InitializationOptions(
                     server_name="telemcp",
-                    server_version="0.1.0",
+                    server_version=__version__,
                     capabilities=server.get_capabilities(
                         notification_options=NotificationOptions(),
                         experimental_capabilities={},

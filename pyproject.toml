@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "telemcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Read-only Telegram MCP server for AI assistants"
 authors = [{name = "Alexey Shtokalo"}]
 keywords = ["ai", "telegram", "mcp"]
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-telemcp = "telemcp.server:run"
+telemcp = "telemcp.__main__:main"
 telemcp-auth = "telemcp.auth:main"
 telemcp-test = "telemcp.test_connection:main"
 

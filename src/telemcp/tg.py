@@ -233,7 +233,7 @@ class TelegramReader:
         if not await self._client.is_user_authorized():
             await self._client.disconnect()
             raise RuntimeError(
-                "Not authorized. Run  python -m telemcp.auth --config <config.json>  first."
+                "Not authorized. Run  telemcp auth --config <config.json>  first."
             )
 
     async def disconnect(self):
