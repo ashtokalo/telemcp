@@ -17,9 +17,17 @@ Typical use cases:
 
 ## Installation
 
+On most modern Linux distributions and macOS, system Python is managed externally and
+`pip install` into the system environment is blocked. Use a virtual environment:
+
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Run all subsequent commands (`auth.py`, `server.py`, `test_connection.py`) inside the
+activated environment, or prefix them with `.venv/bin/python`.
 
 ## API credentials
 
@@ -41,21 +49,66 @@ when using the fallback credentials.
 cp config.example.json config.json
 ```
 
-**2. Run the auth script once.** It connects to Telegram, asks for your phone number
-and the confirmation code, and saves the session to disk.
+**2. Authenticate once.** The auth script connects to Telegram and saves the session to disk.
+After this step, the session file handles all authentication automatically.
+
+Two login methods are available:
+
+**Phone + code** - Telegram sends a confirmation code to your other devices:
 
 ```bash
 python auth.py --config config.json
 ```
 
-If two-factor authentication is enabled on your account, it will also ask for the password.
-After this step, the session file handles authentication and no interactive input is needed.
+Enter your phone number with country code (e.g. `+79001234567`) and the code that arrives
+in Telegram. If two-factor authentication is enabled, it also asks for the password.
 
-**3. Configure the whitelist.** Start the server and use `tg_list_folders` and
+**QR code** - no SMS or code needed; scan with an existing Telegram client:
+
+```bash
+python auth.py --config config.json --qr
+```
+
+A QR code is printed to the terminal. On your phone or desktop Telegram, go to
+Settings -> Devices -> Link Desktop Device, then scan the code. If two-factor authentication
+is enabled, it prompts for the password after scanning.
+
+Use `--qr` if codes sent to your devices are not arriving, or to avoid phone-based verification.
+
+To see full Telethon protocol logs during auth (useful for debugging):
+
+```bash
+python auth.py --config config.json --verbose
+```
+
+**3. Verify the connection.** After authentication, run the smoke test to confirm everything works:
+
+```bash
+python test_connection.py --config config.json
+```
+
+It connects to Telegram, prints all folders and the first 15 dialogs, and if a whitelist is
+configured, also shows dialogs passing the whitelist filter. A successful run looks like:
+
+```
+Connecting to Telegram...
+OK
+
+Folders:
+   2  Family
+   5  Work
+
+First 15 dialogs (no whitelist filter):
+      -1001234567890  supergroup   Team Chat  [3 unread]
+             9876543  user         John Smith
+  ...
+```
+
+**4. Configure the whitelist.** Start the server and use `tg_list_folders` and
 `tg_list_dialogs` to find the IDs of the folders and chats you want to allow, then add
 them to `config.json`.
 
-**4. Register the server in your MCP client** (e.g. Claude Code `.mcp.json`):
+**5. Register the server in your MCP client** (e.g. Claude Code `.mcp.json`):
 
 ```json
 {
