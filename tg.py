@@ -88,7 +88,7 @@ def build_proxy(proxy_config: Optional[dict]):
         "socks4": socks.SOCKS4,
         "http": socks.HTTP,
     }.get(ptype, socks.SOCKS5)
-    username = proxy_config.get("username") or None
+    username = proxy_config.get("username") or proxy_config.get("user") or None
     password = proxy_config.get("password") or None
     return (stype, host, port, True, username, password), None
 
@@ -240,7 +240,7 @@ class TelegramReader:
             if isinstance(f, DialogFilterDefault):
                 result.append({"id": 0, "name": "All Chats"})
             elif isinstance(f, DialogFilter):
-                result.append({"id": f.id, "name": f.title})
+                result.append({"id": f.id, "name": f.title.text if hasattr(f.title, 'text') else str(f.title)})
         return result
 
     async def get_dialogs(
@@ -365,7 +365,7 @@ class TelegramReader:
         if folder_id is not None:
             for f in await self._load_filters():
                 if isinstance(f, DialogFilter) and f.id == folder_id:
-                    folder_name = f.title
+                    folder_name = f.title.text if hasattr(f.title, 'text') else str(f.title)
                     break
 
         return {
