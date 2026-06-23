@@ -1,22 +1,20 @@
 """Entry point for `python -m telemcp` and the `telemcp` console script."""
 import sys
 
+from .cli import main
+from .server import run
 
-def main() -> None:
-    cmd = sys.argv[1] if len(sys.argv) > 1 else None
 
-    if cmd == "auth":
-        sys.argv = [sys.argv[0] + " auth"] + sys.argv[2:]
-        from .auth import main as auth_main
-        auth_main()
-    elif cmd == "connection":
-        sys.argv = [sys.argv[0] + " connection"] + sys.argv[2:]
-        from .test_connection import main as connection_main
-        connection_main()
-    else:
-        from .server import run
+def dispatch() -> None:
+    # If first argument is not a known CLI command, start the MCP server.
+    # This lets `telemcp` (no args) work as a server for MCP clients.
+    cli_commands = {"auth", "connection", "folders", "dialogs", "messages", "unread",
+                    "--help", "-h", "--version"}
+    if len(sys.argv) == 1 or sys.argv[1] not in cli_commands:
         run()
+    else:
+        main()
 
 
 if __name__ == "__main__":
-    main()
+    dispatch()

@@ -65,13 +65,12 @@ when using the fallback credentials.
 
 ## Setup
 
-**1. Copy the example config and edit it.**
+**1. Create a config file.**
 
-```bash
-cp config.example.json config.json
-```
+Copy `config.example.json` from the repository, or create `~/.telemcp/config.json` manually
+using the template from the [Configuration reference](#configuration-reference) section below.
 
-**2. Authenticate once.** The auth script connects to Telegram and saves the session to disk.
+**2. Authenticate once.** This connects to Telegram and saves the session to disk.
 After this step, the session file handles all authentication automatically.
 
 Two login methods are available:
@@ -79,7 +78,7 @@ Two login methods are available:
 **Phone + code** - Telegram sends a confirmation code to your other devices:
 
 ```bash
-make auth-phone
+telemcp auth
 ```
 
 Enter your phone number with country code (e.g. `+79001234567`) and the code that arrives
@@ -88,25 +87,25 @@ in Telegram. If two-factor authentication is enabled, it also asks for the passw
 **QR code** - no SMS or code needed; scan with an existing Telegram client:
 
 ```bash
-make auth-qr
+telemcp auth --qr
 ```
 
 A QR code is printed to the terminal. On your phone or desktop Telegram, go to
 Settings -> Devices -> Link Desktop Device, then scan the code. If two-factor authentication
 is enabled, it prompts for the password after scanning.
 
-Use `make auth-qr` if codes sent to your devices are not arriving, or to avoid phone-based verification.
+Use `telemcp auth --qr` if codes sent to your devices are not arriving, or to avoid phone-based verification.
 
 To see full Telethon protocol logs during auth (useful for debugging):
 
 ```bash
-.venv/bin/python -m telemcp.auth --config config.json --verbose
+telemcp auth --verbose
 ```
 
 **3. Verify the connection.** After authentication, run the smoke test to confirm everything works:
 
 ```bash
-make connection
+telemcp connection
 ```
 
 It connects to Telegram, prints all folders and the first 15 dialogs, and if a whitelist is
@@ -135,7 +134,7 @@ them to `config.json`.
 Via Claude Code CLI (simplest):
 
 ```bash
-claude mcp add telegram /path/to/telemcp/telemcp.sh --config /path/to/config.json
+claude mcp add telegram -- telemcp --config config.json
 ```
 
 Or manually in `.mcp.json`:
@@ -144,15 +143,12 @@ Or manually in `.mcp.json`:
 {
   "mcpServers": {
     "telegram": {
-      "command": "/path/to/telemcp/telemcp.sh",
-      "args": ["--config", "/path/to/telemcp/config.json"]
+      "command": "telemcp",
+      "args": ["--config", "~/.telemcp/config.json"]
     }
   }
 }
 ```
-
-`telemcp.sh` uses Python from `.venv` inside the telemcp directory if it exists, otherwise
-falls back to the system `python3`.
 
 ## Config file lookup order
 
@@ -199,7 +195,7 @@ Set to `null` or omit to use the Telegram Desktop fallback (see above).
 
 ### session_file
 
-Path to the Telethon session file. Created by `auth.py`. Supports `~` expansion.
+Path to the Telethon session file. Created by `telemcp auth`. Supports `~` expansion.
 Default: `~/.telemcp/session`.
 
 ### whitelist
@@ -261,16 +257,16 @@ Set to `null` to connect directly.
 ## Session encryption
 
 By default, the Telethon session is stored as a plain SQLite file on disk. To encrypt it,
-set the `TELEMCP_PINCODE` environment variable before running `auth.py` and the server.
+set the `TELEMCP_PINCODE` environment variable before running `telemcp auth` and the server.
 
 ```bash
 export TELEMCP_PINCODE="your-passphrase"
-make auth-phone   # or make auth-qr
+telemcp auth          # or telemcp auth --qr
 ```
 
 When the variable is set:
 
-- `auth.py` exports the session as a string, encrypts it with Fernet (AES-128-CBC + HMAC-SHA256,
+- `telemcp auth` exports the session as a string, encrypts it with Fernet (AES-128-CBC + HMAC-SHA256,
   key derived via PBKDF2-HMAC-SHA256 with 200 000 iterations), and saves it to
   `<session_file>.enc`. The plain SQLite file is deleted.
 - The server loads the encrypted file into memory on startup and saves it back on shutdown.
@@ -302,13 +298,16 @@ In `.mcp.json`, use the `env` field:
 Via CLI (`claude mcp add` does not support `env` directly — edit `.mcp.json` after adding):
 
 ```bash
-claude mcp add telegram /path/to/telemcp/telemcp.sh --config /path/to/telemcp/config.json
+claude mcp add telegram telemcp --config ~/.telemcp/config.json
 # then open .mcp.json and add the "env" block manually
 ```
 
 ## Running tests
 
+Tests are intended for development. Clone the repo, then:
+
 ```bash
+make configure
 make test
 ```
 
